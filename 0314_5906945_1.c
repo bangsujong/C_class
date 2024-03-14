@@ -19,9 +19,9 @@ int is_prime(int n) {
 }
 
 int main() {
-    clock_t start, stop;
+    clock_t start, stop; // clock 함수
     double duration;
-    start = clock();
+    start = clock();    // 시작
     
     int sum = 0;
 
@@ -31,7 +31,7 @@ int main() {
             sum += num;
     }
 
-    stop = clock();
+    stop = clock(); // 종료
     duration = (double) (stop - start) / CLOCKS_PER_SEC;
     printf("0부터 100까지의 소수의 합은: %d\n", sum);
     printf("수행시간은 %f 입니다.\n",duration);
