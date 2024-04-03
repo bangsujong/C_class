@@ -44,14 +44,17 @@ int main()
     struct polynomial a ={6, {7, 0, 0, 5, 9, 0, 1}};
     struct polynomial b ={3, {5, 2, 1, 10}};
     struct polynomial result = mul_polynomial(a, b);
+    printf("A : ");
     print_poly(a);
+    printf("B : ");
     print_poly(b);
 
     mul_polynomial(a,b);
-    printf("-----------------------------------------------------------------\n");
+    printf("-------------------------------------------------------\n");
+    printf("result : ");
     print_poly(result);
-
-
+    
 return 0;
+
 
 }
