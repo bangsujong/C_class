@@ -2,19 +2,11 @@
 # define MAX_DEGREE 101
 struct polynomial
 {
-    int degree;             //지수
-    float coef[MAX_DEGREE]; // 계수
+    int degree;
+    float coef[MAX_DEGREE];
 };
 
-void print_polynomial(struct polynomial p)
-{
-    for(int i = p.degree; i >= 1; i--)
-    {
-        printf("%3.1fx^%d +", p.coef[p.degree-i],i);
-    }
-    printf("%3.1f\n\n", p.coef[p.degree]);
-}
-
+void print_polynomial();
 
 struct polynomial add_polynomial_poly(struct polynomial A, struct polynomial B)
 {
@@ -22,7 +14,7 @@ struct polynomial add_polynomial_poly(struct polynomial A, struct polynomial B)
     int Apos = 0, Bpos = 0, Cpos = 0;
     int degree_a = A.degree, degree_b = B.degree;
 
-    C.degree = (A.degree > B.degree) ? A.degree : B.degree; //몇차식인지 결정
+    C.degree = (A.degree > B.degree) ? A.degree : B.degree;
     
     while (Apos <= A.degree && Bpos <= B.degree)
     {
@@ -68,3 +60,13 @@ int main()
 
     return 0;
 }
+
+void print_polynomial(struct polynomial p)
+{
+    for(int i = p.degree; i >= 1; i--)
+    {
+        printf("%3.1fx^%d +", p.coef[p.degree-i],i);
+    }
+    printf("%3.1f\n\n", p.coef[p.degree]);
+}
+

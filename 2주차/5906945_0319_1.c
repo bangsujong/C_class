@@ -29,7 +29,7 @@ int main()
 
 
     start = clock();    // 시작
-    int n = 20;
+    int n = 5;
     factorial_rec(n);
     printf("factorial Recursive Result: %ld\n", factorial_rec(n));
 

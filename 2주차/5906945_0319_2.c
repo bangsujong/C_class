@@ -4,7 +4,7 @@
 
 // 반복문
 long long power_iter(int x, int y)
- {
+{
     long long result = 1;
     for (int i = 0; i < y; i++)
     {

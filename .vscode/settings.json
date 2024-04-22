@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "multiflypolynomial.C": "cpp"
+        "multiflypolynomial.C": "cpp",
+        "stdio.h": "c",
+        "123.C": "cpp"
     }
 }
