@@ -1,241 +1,182 @@
 #include <stdio.h>
-#include <time.h>
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <string.h>
 
 #define MAX_STACK_SIZE 100
 
 typedef int element;
-typedef struct Stacktype {
-	// element data[];
-	element* data;
-	int capacity;
-	int top;
+typedef struct {
+    element data[MAX_STACK_SIZE];
+    int top;
 } StackType;
 
-
-// create : 이미 만들었음, StackType의 변수를 선언하면 만들어짐
-// delete : 할수 없음
-
-// init 
-void init(StackType* sptr, int ofs) {
-	sptr->data = (element*)malloc(sizeof(StackType) * ofs);
-	sptr->top = -1;
-	sptr->capacity = ofs;
+void init_stack(StackType *s){
+    s->top = -1;
 }
 
-// is_full
-int is_full(StackType* sptr) {
-	// printf("[is_full] top = %d, capacity = %d\n", sptr->top, sptr->capacity);
-	if (sptr->top == sptr->capacity - 1) {
-		sptr->capacity = sptr->capacity * 2;
-		sptr->data = (element*)realloc(sptr->data, sptr->capacity * sizeof(element));
-
-	}
-	return 0;
+int is_empty(StackType *s){
+    return (s->top == -1);
 }
 
-int is_empty(StackType* sptr) {
-	return (sptr->top == -1);
+int is_full(StackType *s){
+    return (s->top == (MAX_STACK_SIZE - 1));
 }
 
-// push
-void push(StackType* sptr, element item) {
-
-	if (is_full(sptr)) {
-		fprintf(stderr, "Stack is full\n");
-		return;
-	}
-	else {
-		sptr->top = sptr->top + 1;
-		sptr->data[sptr->top] = item;
-	}
+void push(StackType *s, element item){
+    if(is_full(s)){
+        fprintf(stderr,"스택 포화 에러\n");
+        exit(1);
+    }
+    else
+        s->data[++(s->top)] = item;
 }
 
-element pop(StackType* sptr) {
-	element r;
-	if (is_empty(sptr)) {
-		fprintf(stderr, "stack is empty\n");
-		return -1;
-	}
-	else {
-		// r = sptr->stack[sptr->top];
-		// sptr->top = sptr->top - 1;
-		// return r;
-		return (sptr->data[(sptr->top)--]);
-	}
+element pop(StackType *s){
+    if(is_empty(s)){
+        fprintf(stderr,"스택 공백 에러\n");
+        exit(1);
+    }
+    else
+        return s->data[(s->top)--];
 }
 
-element peek(StackType* sptr) {
-
-	element r;
-	if (is_empty(sptr)) {
-		fprintf(stderr, "stack is empty\n");
-		return -1;
-	}
-	else {
-		// r = stack[top];
-		// top = top - 1;
-		// return r;
-		return (sptr->data[sptr->top]);
-	}
+element peek(StackType *s){
+    if(is_empty(s)){
+        fprintf(stderr,"스택 공백 에러\n");
+        exit(1);
+    }
+    else
+        return s->data[s->top];
 }
 
-void stack_print(StackType* sptr) {
-	for (int i = sptr->top; i >= 0; i--) {
-		printf("[%d]", sptr->data[i]);
-	}
-}
-
-int eval(char expr[]) {
-	int len;
-	StackType s;
-
-	init(&s, 20);
-	len = strlen(expr);
-	for (int i = 0; i < len; i++) {
-		int ch = expr[i];
-		int op1, op2, value;
-
-
-		printf("\nStep [%d] %c ", i, ch);
-		if ((ch == '+') || (ch == '-')
-			|| (ch == '*') || (ch == '/')) {
-			op1 = pop(&s);
-			op2 = pop(&s);
-			/* if (ch == '+') {
-				value = op1 + op2;
-				push(&s, value);
-			} else if (ch == '-') {
-				value = op1 - op2;
-				push(&s, value);
-			} else if (ch == '*') {
-				value = op1 * op2;
-				push(&s, value);
-			} else {
-				value = op1 / op2;
-				push(&s, value);
-			}
-			*/
-			switch (ch) {
-				case '+': push(&s, op2 + op1); break;
-				case '-' :push(&s, op2 - op1); break;
-				case '*' :push(&s, op2 * op1); break;
-				case '/' :push(&s, op2 / op1); break;
-				default:;
-			}
-		}
-		else if ((ch >= '0') && (ch <= '9')) {
-			value = ch - '0';
-			push(&s, value);
-		}
-		else {
-			printf(" Abnomal character in expr\n");
-		}
-		printf(" Stack : ");
-		stack_print(&s);
-	}
-	return (pop(&s));
-}
-
-int prec(char op){
-    switch(op){
-        case '(': case ')': return 0;
+int precedence(char op) {
+    switch(op) {
+        case '(': return 0;
         case '+': case '-': return 1;
         case '*': case '/': return 2;
     }
     return -1;
 }
 
-void infix_to_postfix(char expr[]) {
-    char top_op;
-    int len = strlen(expr);
-    StackType s;
+// 중위 표기식을 후위 표기식으로 변환하는 함수
+void infix_to_postfix(char infix[], char postfix[]){
+	StackType s;
+    init_stack(&s);
+    int i = 0; // infix 문자열의 인덱스
+    int j = 0; // postfix 문자열의 인덱스
 
-    init(&s, MAX_STACK_SIZE);
-
-    for (int i = 0; i < len; i++) {
-        switch (expr[i]) {
-            case '+':
-            case '-':
-            case '*':
-            case '/':
-                while (!is_empty(&s) && prec(expr[i]) <= prec((char)peek(&s))) {
-                    printf("%c", pop(&s));
-                }
-                push(&s, (int)expr[i]);
-                break;
-            case '(':
-                push(&s, (int)expr[i]);
-                break;
-            case ')':
-                while (!is_empty(&s) && (char)peek(&s) != '(') {
-                    printf("%c", (char)pop(&s));
-                }
-                if (!is_empty(&s) && (char)peek(&s) == '(') {
-                    pop(&s); // '(' 제거
-                } else {
-                    printf("괄호 짝이 맞지 않습니다.\n");
-                    return;
-                }
-                break;
-            default:
-                printf("%c", expr[i]);
+    while (infix[i] != '\0') {
+        if (infix[i] == '(') {
+            push(&s, infix[i]);
+            i++;
+        } else if (infix[i] == ')') {
+            while (!is_empty(&s) && peek(&s) != '(') {
+                postfix[j++] = pop(&s);
+            }
+            pop(&s); // '(' 제거
+            i++;
+        } else if (infix[i] >= '0' && infix[i] <= '9') {
+            postfix[j++] = infix[i++];
+        } else { // 연산자인 경우
+            while (!is_empty(&s) && precedence(peek(&s)) >= precedence(infix[i])) {
+                postfix[j++] = pop(&s);
+            }
+            push(&s, infix[i]);
+            i++;
         }
     }
+
     while (!is_empty(&s)) {
-        if ((char)peek(&s) == '(') {
-            printf("괄호 짝이 맞지 않습니다.\n");
-            return;
-        }
-        printf("%c", (char)pop(&s));
+        postfix[j++] = pop(&s);
     }
+    postfix[j] = '\0'; // 후위 표기식의 끝에 널 문자 추가
 }
 
+// 후위 표기식을 계산하는 함수
+element evaluate_postfix(char postfix[]){
+	StackType s;
+    init_stack(&s);
+    int i = 0;
 
-int main() {
-    char infixExpression[MAX_STACK_SIZE];
-    char postfixExpression[MAX_STACK_SIZE];
+    while (postfix[i] != '\0') {
+        if (postfix[i] >= '0' && postfix[i] <= '9') {
+            push(&s, postfix[i] - '0'); // 문자를 숫자로 변환하여 스택에 저장
+        } else {
+            int op2 = pop(&s);
+            int op1 = pop(&s);
+            switch (postfix[i]) {
+                case '+':
+                    push(&s, op1 + op2);
+                    break;
+                case '-':
+                    push(&s, op1 - op2);
+                    break;
+                case '*':
+                    push(&s, op1 * op2);
+                    break;
+                case '/':
+                    push(&s, op1 / op2);
+                    break;
+                default:
+                    fprintf(stderr, "올바르지 않은 연산자입니다.\n");
+                    exit(1);
+            }
+        }
+        i++;
+    }
+
+    return pop(&s);
+
+}
+
+void get_infix_expr(char infix[]) {
+    printf("중위표기식을 입력하세요: ");
+    fgets(infix, MAX_STACK_SIZE, stdin);
+    infix[strcspn(infix, "\n")] = '\0'; // fgets로 입력 받은 문자열의 맨 끝에 있는 개행 문자 제거
+}
+
+void print_postfix_expr(char infix[], char postfix[]){
+    infix_to_postfix(infix, postfix);
+    printf("후위표기식: %s\n", postfix);
+}
+
+void calculate_postfix_expr(char postfix[]){
+    element result = evaluate_postfix(postfix);
+    printf("후위표기식 계산 결과: %d\n", result);
+}
+
+int main(){
+    char infix[MAX_STACK_SIZE];
+    char postfix[MAX_STACK_SIZE];
+    int choice;
     
-    while (1){
-        printf("다음과 같은 메뉴로 동작하는 프로그램입니다: \n");
-        printf("1. 중위식을 입력 받음\n");
-        printf("2. 중위식을 후위식으로 변환\n");
-        printf("3. 후위식을 계산\n");
+    while (1) {
+        printf("\n1. 중위표기식 입력\n");
+        printf("2. 중위표기식을 후위표기식으로 변환하여 출력\n");
+        printf("3. 후위표기식을 계산하여 출력\n");
         printf("4. 종료\n");
-        printf("메뉴를 선택하세요 : ");
-
-        int choice;
+        printf("선택: ");
         scanf("%d", &choice);
+        getchar(); // 버퍼 비우기
 
-        switch(choice) {
+        switch (choice) {
             case 1:
-                printf("중위식을 입력하세요: ");
-                getchar();
-                fgets(infixExpression, sizeof(infixExpression), stdin);
-                printf("입력된 중위식 : %s\n", infixExpression);
+                get_infix_expr(infix);
                 break;
-            
             case 2:
-                printf("변환된 후위식: ");
-                infix_to_postfix(infixExpression);
-                printf("\n");
+                print_postfix_expr(infix, postfix);
                 break;
-
             case 3:
-                printf("후위식을 계산한 결과: %d\n", eval(postfixExpression));
+                calculate_postfix_expr(postfix);
                 break;
-
             case 4:
-                
                 printf("프로그램을 종료합니다.\n");
-                exit(0);
-            // switch문의 else 역할을 하는 default 문
-
-            default: 
-                printf("잘못된 메뉴 선택입니다. 다시 선택하세요.\n");
+                return 0;
+            default:
+                printf("잘못된 선택입니다. 다시 선택해주세요.\n");
                 break;
         }
     }
+
     return 0;
 }

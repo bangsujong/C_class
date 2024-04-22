@@ -56,7 +56,7 @@ element pop(StackType* sptr) {
 	element r;
 	if (is_empty(sptr)) {
 		fprintf(stderr, "stack is empty\n");
-		return -1;
+		exit(1);
 	}
 	else {
 		// r = sptr->stack[sptr->top];
@@ -71,7 +71,7 @@ element peek(StackType* sptr) {
 	element r;
 	if (is_empty(sptr)) {
 		fprintf(stderr, "stack is empty\n");
-		return -1;
+		exit(1);
 	}
 	else {
 		// r = stack[top];
@@ -88,11 +88,11 @@ void stack_print(StackType* sptr) {
 }
 
 int eval(char expr[]) {
-	int len;
-	StackType s;
 
+	StackType s;
 	init(&s, 20);
-	len = strlen(expr);
+	int len = strlen(expr);
+
 	for (int i = 0; i < len; i++) {
 		int ch = expr[i];
 		int value;
