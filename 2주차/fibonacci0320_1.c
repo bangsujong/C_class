@@ -5,7 +5,7 @@
 
 int fibonacci_rec(int n)
 {
-    printf("f(%d)",n);
+    printf("f(%d)   ",n);
     if (n ==0) return 0;
     else if (n ==1) return 1;
     else return (fibonacci_rec(n-1) + fibonacci_rec(n-2));
