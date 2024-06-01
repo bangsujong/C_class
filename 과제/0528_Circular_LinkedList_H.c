@@ -72,10 +72,10 @@ ListNode *delete_last(ListNode *head) {
         while(curr->link != head){
             curr = curr ->link;
         }
-        curr -> link = head->link;
+        curr -> link = head -> link;
         free(head);
-        return curr;
     }
+    return curr;
 }
 
 void print_list(ListNode *head) {
@@ -88,7 +88,7 @@ void print_list(ListNode *head) {
     do {
         printf("%d -> ", p->data);
         p = p->link;
-    } while (p != head);
+    } while (p != head->link);
     printf("(head)\n");
 }
 
@@ -133,6 +133,6 @@ int main() {
             default:
                 printf("잘못된 선택입니다. 다시 시도하세요.\n");
         }
-    }
+    }while (choice != 6);
     return 0;
 }
