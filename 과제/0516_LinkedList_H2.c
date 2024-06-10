@@ -22,7 +22,8 @@ ListNode *insert(ListNode *head, int position, element value, int *count) {
     if (position == 0) {
         p->link = head;
         head = p;
-    } else {
+    } 
+    else {
         ListNode *prev = head;
         for (int i = 0; i < position - 1; i++) {
             if (prev == NULL) {
